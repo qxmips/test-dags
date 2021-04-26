@@ -19,7 +19,7 @@ def consume_kafka():
     LOGGER.setLevel(logging.INFO)
     from kafka import KafkaConsumer
     LOGGER.info("consume_kafka >>> 2 - INFO Starting kafka consumer")
-    consumer = KafkaConsumer('raw_input', bootstrap_servers=['kafka-0.kafka-headless.ddt-persistence.svc.cluster.local:9092,kafka-1.kafka-headless.ddt-persistence.svc.cluster.local:9092,kafka-2.kafka-headless.ddt-persistence.svc.cluster.local:9092'],
+    consumer = KafkaConsumer('test', bootstrap_servers=['kafka.ddt-persistence.svc.cluster.local:9092'],
                          auto_offset_reset='earliest', enable_auto_commit=True,
                          auto_commit_interval_ms=1000)
     LOGGER.info("I'm inside")
@@ -31,7 +31,7 @@ def consume_kafka():
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': datetime(2019, 3, 4),
+    'start_date': datetime(2021, 04, 25),
     'email': ['airflow@example.com'],
     'email_on_failure': False,
     'email_on_retry': False,
