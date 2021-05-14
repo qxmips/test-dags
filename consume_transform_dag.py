@@ -19,7 +19,7 @@ def consume_kafka():
     LOGGER.setLevel(logging.INFO)
     from kafka import KafkaConsumer
     LOGGER.info("consume_kafka >>> 2 - INFO Starting kafka consumer")
-    consumer = KafkaConsumer('test', bootstrap_servers=['kafka.ddt-persistence.svc.cluster.local:9092'],
+    consumer = KafkaConsumer('test', bootstrap_servers=['kafka-cluster-kafka-bootstrap.ddt-persistence.svc.cluster.local:9092'],
                          auto_offset_reset='earliest', enable_auto_commit=True,
                          auto_commit_interval_ms=1000)
     LOGGER.info("I'm inside")
