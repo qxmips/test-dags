@@ -8,18 +8,19 @@ from airflow.models import DAG
 from airflow.operators.bash_operator import BashOperator
 from airflow.operators.python_operator import PythonOperator
 from kafka import KafkaConsumer
+from airflow.operators.bash import BashOperator
+from airflow.utils.dates import days_ago
 import logging
 
-log = logging.getLogger(__name__)
 
 
 def consume_kafka():
-    import logging
     LOGGER = logging.getLogger("airflow.task")
     LOGGER.setLevel(logging.INFO)
-    from kafka import KafkaConsumer
+
     LOGGER.info("consume_kafka >>> 2 - INFO Starting kafka consumer")
     consumer = KafkaConsumer('ddt', bootstrap_servers=['kafka-cluster-kafka-bootstrap.ddt-persistence.svc.cluster.local:9092'],
+                         group_id="airflow",
                          auto_offset_reset='earliest', enable_auto_commit=True,
                          auto_commit_interval_ms=1000)
     LOGGER.info("I'm inside")
@@ -31,7 +32,7 @@ def consume_kafka():
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
-    'start_date': datetime(2021, 4, 25),
+    'start_date': airflow.utils.dates.days_ago(1),
     'email': ['airflow@example.com'],
     'email_on_failure': False,
     'email_on_retry': False,
