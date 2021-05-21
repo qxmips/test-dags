@@ -73,7 +73,7 @@ spec:
     serviceAccount: spark-operator-spark
     volumeMounts:
       - name: config-vol
-        mountPath: /opt/spark/ddt/pi.py
+        mountPath: /opt/spark/ddt
   executor:
     cores: 1
     instances: 1
@@ -82,11 +82,14 @@ spec:
       version: 3.1.1
     volumeMounts:
       - name: config-vol
-        mountPath: /opt/spark/ddt/pi.py
+        mountPath: /opt/spark/ddt
   volumes:
     - name: config-vol
       configMap:
         name: sparkapps
+        items:
+        - key: "pi.py"
+          path: "pi.py"
       
 """
 
