@@ -118,11 +118,11 @@ spec:
 
 with DAG(dag_id="ddt-ingestion", schedule_interval="@hourly", default_args=default_args, catchup=False) as dag:
 
-    t1 = PythonOperator(
-        task_id='stage_1',
-        python_callable=stage_1,
-        dag=dag
-    )
+    # t1 = PythonOperator(
+    #     task_id='stage_1',
+    #     python_callable=stage_1,
+    #     dag=dag
+    # )
 
     t1 = SparkKubernetesOperator(
         task_id='spark_pi_submit',
