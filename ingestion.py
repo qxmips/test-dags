@@ -49,7 +49,7 @@ apiVersion: "sparkoperator.k8s.io/v1beta2"
 kind: SparkApplication
 metadata:
   name: pyspark-pi
-  namespace: spark-operator
+  namespace: ddt-compute
 spec:
   type: Python
   pythonVersion: "3"
