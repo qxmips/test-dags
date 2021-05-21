@@ -74,7 +74,6 @@ spec:
     volumeMounts:
       - name: config-vol
         mountPath: /opt/spark/ddt/pi.py
-        subPath: pi.py
   executor:
     cores: 1
     instances: 1
@@ -84,7 +83,6 @@ spec:
     volumeMounts:
       - name: config-vol
         mountPath: /opt/spark/ddt/pi.py
-        subPath: pi.py
   volumes:
     - name: config-vol
       configMap:
