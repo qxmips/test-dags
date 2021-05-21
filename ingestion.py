@@ -45,75 +45,39 @@ def stage_1():
 
 TEST_VALID_APPLICATION_YAML = \
     """
----
 apiVersion: "sparkoperator.k8s.io/v1beta2"
 kind: SparkApplication
 metadata:
-  name: pyspark-pi-normal-job1
-  namespace: default
+  name: pyspark-pi
+  namespace: spark-operator
 spec:
   type: Python
-  pythonVersion: "2"
+  pythonVersion: "3"
   mode: cluster
-  image: "gcr.io/spark-operator/spark-py:v2.4.4"
+  image: "gcr.io/spark-operator/spark-py:v3.1.1"
   imagePullPolicy: Always
   mainApplicationFile: local:///opt/spark/examples/src/main/python/pi.py
-  arguments: ["170"]
-  sparkVersion: "2.4.0"
+  sparkVersion: "3.1.1"
   restartPolicy:
     type: OnFailure
     onFailureRetries: 3
     onFailureRetryInterval: 10
     onSubmissionFailureRetries: 5
     onSubmissionFailureRetryInterval: 20
-  batchScheduler: "volcano"
   driver:
-    cores: 3
+    cores: 1
+    coreLimit: "1200m"
     memory: "512m"
     labels:
-      version: 2.4.0
-    serviceAccount: spark
+      version: 3.1.1
+    serviceAccount: spark-operator-spark
   executor:
-    cores: 3
+    cores: 1
     instances: 1
     memory: "512m"
     labels:
-      version: 2.4.0
----
----
-apiVersion: "sparkoperator.k8s.io/v1beta2"
-kind: SparkApplication
-metadata:
-  name: pyspark-pi-normal-job2
-  namespace: default
-spec:
-  type: Python
-  pythonVersion: "2"
-  mode: cluster
-  image: "gcr.io/spark-operator/spark-py:v2.4.4"
-  imagePullPolicy: Always
-  mainApplicationFile: local:///opt/spark/examples/src/main/python/pi.py
-  arguments: ["170"]
-  sparkVersion: "2.4.0"
-  restartPolicy:
-    type: OnFailure
-    onFailureRetries: 3
-    onFailureRetryInterval: 10
-    onSubmissionFailureRetries: 5
-    onSubmissionFailureRetryInterval: 20
-  batchScheduler: "volcano"
-  driver:
-    cores: 3
-    memory: "512m"
-    labels:
-      version: 2.4.0
-    serviceAccount: spark
-  executor:
-    cores: 3
-    instances: 1
-    memory: "512m"
-    labels:
-      version: 2.4.0
+      version: 3.1.1
+      
 """
 
 with DAG(dag_id="ddt-ingestion", schedule_interval="@hourly", default_args=default_args, catchup=False) as dag:
