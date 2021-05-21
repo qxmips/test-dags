@@ -71,6 +71,10 @@ spec:
     labels:
       version: 3.1.1
     serviceAccount: spark-operator-spark
+    volumeMounts:
+      - name: config-vol
+        mountPath: /opt/spark/ddt/pi.py
+        subPath: pi.py
   executor:
     cores: 1
     instances: 1
