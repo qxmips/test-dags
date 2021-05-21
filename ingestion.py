@@ -56,7 +56,7 @@ spec:
   mode: cluster
   image: "gcr.io/spark-operator/spark-py:v3.1.1"
   imagePullPolicy: Always
-  mainApplicationFile: local:///opt/spark/examples/src/main/python/pi.py
+  mainApplicationFile: local:///opt/spark/ddt/pi.py
   sparkVersion: "3.1.1"
   restartPolicy:
     type: OnFailure
@@ -77,6 +77,14 @@ spec:
     memory: "512m"
     labels:
       version: 3.1.1
+    volumeMounts:
+      - name: config-vol
+        mountPath: /opt/spark/ddt/pi.py
+        subPath: pi.py
+  volumes:
+    - name: config-vol
+      configMap:
+        name: sparkapps
       
 """
 
