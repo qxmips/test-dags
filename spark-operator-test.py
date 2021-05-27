@@ -93,7 +93,7 @@ spec:
       
 """
 
-with DAG(dag_id="ddt-ingestion", schedule_interval="@hourly", default_args=default_args, catchup=False) as dag:
+with DAG(dag_id="ddt-spark-k8s-operator", schedule_interval="@hourly", default_args=default_args, catchup=False) as dag:
 
     # t1 = PythonOperator(
     #     task_id='stage_1',
