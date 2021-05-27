@@ -35,7 +35,7 @@ with DAG(dag_id="ddt-ingestion", schedule_interval="@hourly", default_args=defau
 
     stage_1 = SparkSubmitOperator(
         task_id="stage_1",
-        application="from_kafka_to_minio.py",
+        application="/opt/airflow/dags/repo/from_kafka_to_minio.py",
         conn_id="k8s_spark",
         verbose=False
     )
