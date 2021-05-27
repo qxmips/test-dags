@@ -37,6 +37,7 @@ with DAG(dag_id="ddt-ingestion", schedule_interval="@hourly", default_args=defau
         task_id="stage_1",
         application="/opt/airflow/dags/repo/from_kafka_to_minio.py",
         conn_id="k8s_spark",
+        packages = "org.apache.spark:spark-sql-kafka-0-10_2.12:3.1.1,org.apache.kafka:kafka-clients:2.7.0",
         verbose=False
     )
 
