@@ -1,0 +1,2 @@
+FROM bitnami/spark
+RUN curl http://maven.org/maven2/org/apache/spark/spark-sql-kafka-0-10_2.12/3.1.1/spark-sql-kafka-0-10_2.12-3.1.1.jar --output /opt/bitnami/spark/jars/spark-sql-kafka-0-10_2.12-3.1.1.jar
