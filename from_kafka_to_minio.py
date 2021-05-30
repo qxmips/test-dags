@@ -9,6 +9,7 @@ from os.path import expanduser, join, abspath
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import from_json, to_timestamp, col, expr
 from pyspark.sql.types import StructType, StructField, StringType
+import time
 
 #        config("spark.hadoop.fs.s3a.access.key", os.environ.get('AWS_KEY_ID')).\
 #        config("spark.hadoop.fs.s3a.secret.key", os.environ.get('AWS_SECRET')).\
@@ -25,16 +26,12 @@ hadoop_conf.set("fs.s3a.secret.key", "minio123")
 hadoop_conf.set("fs.s3a.endpoint", "http://minio.ddt-persistence.svc.cluster.local")
 hadoop_conf.set("fs.s3a.connection.ssl.enabled", "false")
 hadoop_conf.set("fs.s3a.path.style.access", "true")
-outputPathDir = "s3a://spark/output.parquet"
+output_path = "s3a://spark/output.parquet"
+checkpoint_path="s3a://spark/checkpoint"
 
 #print("Creating static df")
 #static_spark_reader = spark.read.format("kafka").option("kafka.bootstrap.servers", "kafka-cluster-kafka-bootstrap.ddt-persistence.svc.cluster.local:9092").option("subscribe", "ddt").option("startingOffsets", "earliest").load()
-#static_spark_reader.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)").write.format("csv").mode("Overwrite").save(outputPathDir)
-
-# print("Creating schema from static df")
-# schema = static_spark_reader.limit(10).schema
-# print("Print schema:")
-# static_spark_reader.printSchema()
+#static_spark_reader.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)").write.format("parquet").mode("Overwrite").save(output_path)
 
 schema = StructType([
         StructField("@metadata", StringType()),
@@ -44,14 +41,13 @@ schema = StructType([
         StructField("well_id", StringType())
     ])
 print("Creating spark stream df")
-df = spark.readStream.format("kafka").option("kafka.bootstrap.servers", "kafka-cluster-kafka-bootstrap.ddt-persistence.svc.cluster.local:9092").option("subscribe", "ddt").option("startingOffsets", "earliest").load()
+df = spark.readStream.format("kafka").option("kafka.bootstrap.servers", "kafka-cluster-kafka-bootstrap.ddt-persistence.svc.cluster.local:9092").option("subscribe", "ddt").option("startingOffsets", "latest").load()
 if  df.isStreaming:
     print("We are streaming!")
-value_df = df.select(from_json(col("value").cast("string"), schema).alias("value"))
+value_df = df.selectExpr("CAST(key AS STRING) as key", "CAST(value AS STRING) as value").select(from_json(col("value").cast("string"), schema).alias("value"))
 value_df.printSchema()
-# output = value_df.writeStream.format("console").option("truncate","false").outputMode("append").trigger(processingTime="5 seconds").start()
-# print("Waiting for query")
-# output.awaitTermination()
-value_df.writeStream.format("parquet").outputMode("append").start(outputPathDir)
+#output = value_df.writeStream.format("console").option("truncate","false").outputMode("append").trigger(processingTime="5 seconds").start()
+output =  value_df.writeStream.format("parquet").outputMode("append").option("path", output_path).option("checkpointLocation", checkpoint_path).trigger(processingTime='5 seconds').start()
+output.awaitTermination(60)
 
 
