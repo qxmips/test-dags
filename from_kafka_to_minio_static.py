@@ -40,14 +40,44 @@ schema = StructType([
         StructField("payload", StringType()),
         StructField("well_id", StringType())
     ])
+
+
+
+print("Creating static df")
+static_spark_reader = spark.read.format("kafka").option("kafka.bootstrap.servers", "kafka-cluster-kafka-bootstrap.ddt-persistence.svc.cluster.local:9092").option("subscribe", "ddt").option("startingOffsets", "earliest").load()
+#static_spark_reader.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)").write.format("parquet").mode("Overwrite").save(output_path)
+static_spark_reader.selectExpr("CAST(key AS STRING) as key", "CAST(value AS STRING) as value")\
+    .select(from_json(col("value").cast("string"), schema).alias("value"))\
+    .write.format("parquet")\
+    .mode("append")\
+    .option("checkpointLocation", checkpoint_path)\
+    .option("path", output_path)\
+    .save()
+
+"""
+spark.readStream.format("kafka")\
+    .option("kafka.bootstrap.servers", "kafka-cluster-kafka-bootstrap.ddt-persistence.svc.cluster.local:9092")\
+    .option("subscribe", "ddt").option("startingOffsets", "latest")\
+    .load()\
+    .selectExpr("CAST(key AS STRING) as key", "CAST(value AS STRING) as value")\
+    .select(from_json(col("value").cast("string"), schema).alias("value"))\
+    .writeStream.format("parquet")\
+    .outputMode("append")\
+    .option("path", output_path)\
+    .option("checkpointLocation", checkpoint_path)\
+    .trigger(processingTime='5 seconds')\
+    .start().awaitTermination(60)
+"""
+
+"""
 print("Creating spark stream df")
-df = spark.readStream.format("kafka").option("kafka.bootstrap.servers", "kafka-cluster-kafka-bootstrap.ddt-persistence.svc.cluster.local:9092").option("subscribe", "ddt").option("startingOffsets", "latest").load()
-if  df.isStreaming:
-    print("We are streaming!")
-value_df = df.selectExpr("CAST(key AS STRING) as key", "CAST(value AS STRING) as value").select(from_json(col("value").cast("string"), schema).alias("value"))
+stream_spark_reader = spark.readStream.format("kafka").option("kafka.bootstrap.servers", "kafka-cluster-kafka-bootstrap.ddt-persistence.svc.cluster.local:9092").option("subscribe", "ddt").option("startingOffsets", "latest").load()
+value_df = stream_spark_reader.selectExpr("CAST(key AS STRING) as key", "CAST(value AS STRING) as value").select(from_json(col("value").cast("string"), schema).alias("value"))
 value_df.printSchema()
 #output = value_df.writeStream.format("console").option("truncate","false").outputMode("append").trigger(processingTime="5 seconds").start()
-output =  value_df.writeStream.format("parquet").outputMode("append").option("path", output_path).option("checkpointLocation", checkpoint_path).trigger(processingTime='5 seconds').start()
+output =  value_df.writeStream.format("parquet").outputMode("append").option("path", output_path).option("checkpointLocation", checkpoint_path).trigger(processingTime='1 second').start()
 output.awaitTermination(60)
-
-
+"""
+#spark-kafka-relation-ec8e8bed-75f0-4d07-8f9b-9b01f22ab085-driver-0
+#  client.id = consumer-spark-kafka-relation-ec8e8bed-75f0-4d07-8f9b-9b01f22ab085-driver-0-1
+spark.stop()
