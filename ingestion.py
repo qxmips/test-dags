@@ -38,7 +38,7 @@ with DAG(dag_id="ddt-ingestion", schedule_interval="@hourly", default_args=defau
         application="/opt/airflow/dags/repo/from_kafka_to_minio_streaming.py",
         conn_id="k8s_spark",
         packages = "org.apache.spark:spark-sql-kafka-0-10_2.12:3.1.1,org.apache.kafka:kafka-clients:2.7.0,org.apache.hadoop:hadoop-aws:3.2.0",
-        conf = "/opt/bitnami/spark/jars",
+        conf = "spark.jars.ivy=/opt/bitnami/spark/jars",
         verbose=False
     )
 
