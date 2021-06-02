@@ -1,19 +1,9 @@
 # https://towardsdatascience.com/kafka-python-explained-in-10-lines-of-code-800e3e07dad1
-<<<<<<< HEAD
-
-from datetime import datetime, timedelta
-
-from airflow.models import DAG
-
-from datetime import timedelta
-import airflow
-=======
 import airflow
 import os
 from datetime import datetime, timedelta
 from airflow.models import DAG
 from datetime import timedelta
->>>>>>> 326cbe1eb7c7149a864944bc8e4cc59c9a55744b
 from airflow.operators.bash_operator import BashOperator
 from airflow.operators.python_operator import PythonOperator
 from airflow.providers.cncf.kubernetes.operators.spark_kubernetes import SparkKubernetesOperator
@@ -32,11 +22,7 @@ default_args = {
             "depends_on_past": False,
             "email_on_failure": False,
             "email_on_retry": False,
-<<<<<<< HEAD
-            "email": "aleksandr_shitikov@epam.com",
-=======
             "email": "aleksandr_shitikov@example.com",
->>>>>>> 326cbe1eb7c7149a864944bc8e4cc59c9a55744b
             "retries": 1,
             "retry_delay": timedelta(minutes=1)
         }
@@ -57,14 +43,6 @@ def stage_1():
         LOGGER.info("message is: {}".format(message))
     return True                
 
-<<<<<<< HEAD
-with DAG(dag_id="ddt-ingestion", schedule_interval="@hourly", default_args=default_args, catchup=False) as dag:
-
-    t1 = PythonOperator(
-        task_id='stage_1',
-        python_callable=stage_1,
-        dag=dag
-=======
 TEST_VALID_APPLICATION_YAML = \
     """
 apiVersion: "sparkoperator.k8s.io/v1beta2"
@@ -130,12 +108,8 @@ with DAG(dag_id="ddt-spark-k8s-operator", schedule_interval="@hourly", default_a
         kubernetes_conn_id="kubernetes_default",
         #do_xcom_push=True,
         dag=dag,
->>>>>>> 326cbe1eb7c7149a864944bc8e4cc59c9a55744b
     )
 
 
 
-<<<<<<< HEAD
-=======
 #посмотреть логи спарк оператора
->>>>>>> 326cbe1eb7c7149a864944bc8e4cc59c9a55744b
