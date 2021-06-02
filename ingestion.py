@@ -32,7 +32,7 @@ default_args = {
         }
              
 with DAG(dag_id="ddt-ingestion", schedule_interval="@hourly", default_args=default_args, catchup=False) as dag:
- 
+     
     stage_1 = SparkSubmitOperator(
         task_id="stage_1",
         application="/opt/airflow/dags/repo/from_kafka_to_minio_streaming.py",
