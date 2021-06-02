@@ -39,7 +39,7 @@ with DAG(dag_id="ddt-ingestion", schedule_interval="@hourly", default_args=defau
         conn_id="k8s_cluster",
         name = "stage_1",
         packages = "org.apache.spark:spark-sql-kafka-0-10_2.12:3.1.1,org.apache.kafka:kafka-clients:2.7.0,org.apache.hadoop:hadoop-aws:3.2.0",
-        conf = { #"spark.jars.ivy": "/tmp",
+        conf = { "spark.jars.ivy": "/tmp",
          "spark.executor.instances":"3",
          "spark.kubernetes.authenticate.driver.serviceAccountName": "spark",
          "spark.kubernetes.container.image": "qxmips/spark-py:3.1.1",
