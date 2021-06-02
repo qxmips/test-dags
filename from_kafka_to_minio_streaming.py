@@ -43,4 +43,4 @@ while spark.streams.active != []:
     print("Waiting for streaming query to finish.")
     time.sleep(20)
 
-spark.streams.awaitAnyTermination()
+#spark.streams.awaitAnyTermination()
