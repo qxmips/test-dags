@@ -44,3 +44,4 @@ while spark.streams.active != []:
     time.sleep(20)
 
 #spark.streams.awaitAnyTermination()
+spark.stop()

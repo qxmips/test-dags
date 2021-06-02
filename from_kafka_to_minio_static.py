@@ -81,3 +81,7 @@ output.awaitTermination(60)
 #spark-kafka-relation-ec8e8bed-75f0-4d07-8f9b-9b01f22ab085-driver-0
 #  client.id = consumer-spark-kafka-relation-ec8e8bed-75f0-4d07-8f9b-9b01f22ab085-driver-0-1
 spark.stop()
+
+#pyspark --packages com.amazonaws:aws-java-sdk-pom:1.11.760,org.apache.hadoop:hadoop-aws:2.7.0 --conf spark.hadoop.fs.s3a.endpoint=s3.us-west-2.amazonaws.com
+
+#spark-submit --master k8s://https://1A9929C211F4DAE49AF8DCE09642559D.gr7.us-west-1.eks.amazonaws.com --conf spark.jars.ivy=/tmp --conf spark.executor.instances=3 --conf spark.kubernetes.authenticate.driver.serviceAccountName=spark --conf spark.kubernetes.container.image=qxmips/spark-py:3.1.1 --conf spark.kubernetes.namespace=ddt-compute --conf spark.kubernetes.container.image.pullPolicy=Always  --conf spark.kubernetes.namespace=ddt-compute --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.1.1,org.apache.kafka:kafka-clients:2.7.0,org.apache.hadoop:hadoop-aws:3.1.1 --name stage_1 --queue root.default --deploy-mode cluster local:///opt/spark/work-dir/from_kafka_to_minio_streaming.py                                
