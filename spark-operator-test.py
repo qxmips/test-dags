@@ -32,14 +32,14 @@ with DAG(dag_id="ddt-spark-k8s-operator", schedule_interval="@hourly", default_a
         task_id='stage_1_submit',
         namespace="ddt-compute",
         application_file="SparkApplication_stage_1.yaml",
-        kubernetes_conn_id="k8s_cluster",
+        kubernetes_conn_id="kubernetes_default",
         do_xcom_push=True
     )
     t2 = SparkKubernetesSensor(
         task_id='stage_1_monitor',
         namespace="ddt-compute",
         application_name="{{ task_instance.xcom_pull(task_ids='stage_1_submit')['metadata']['name'] }}",
-        kubernetes_conn_id="k8s_cluster",
+        kubernetes_conn_id="kubernetes_default",
 
     )
     t1 >> t2
