@@ -44,7 +44,12 @@ with DAG(dag_id="ddt-ingestion", schedule_interval="@hourly", default_args=defau
          "spark.kubernetes.authenticate.driver.serviceAccountName": "spark",
          "spark.kubernetes.container.image": "qxmips/spark-py:3.1.1",
          "spark.kubernetes.namespace": "ddt-compute",
-         "spark.kubernetes.file.upload.path": "s3a://spark/shared"
+         "spark.kubernetes.file.upload.path": "s3a://spark/shared",
+         "spark.hadoop.fs.s3a.access.key": "minio",
+         "spark.hadoop.fs.s3a.secret.key": "minio123",
+         "spark.hadoop.fs.s3a.endpoint": "http://minio.ddt-persistence.svc.cluster.local",
+         "spark.hadoop.fs.s3a.path.style.access": "true",
+         "spark.hadoop.fs.s3a.connection.ssl.enabled":"false"
           }, 
         verbose=False
     )
