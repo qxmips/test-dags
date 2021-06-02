@@ -43,7 +43,8 @@ with DAG(dag_id="ddt-ingestion", schedule_interval="@hourly", default_args=defau
          "spark.executor.instances":"3",
          "spark.kubernetes.authenticate.driver.serviceAccountName": "spark",
          "spark.kubernetes.container.image": "qxmips/spark-py:3.1.1",
-         "spark.kubernetes.namespace": "ddt-compute"
+         "spark.kubernetes.namespace": "ddt-compute",
+         "spark.kubernetes.file.upload.path": "s3a://spark/shared"
           }, 
         verbose=False
     )
