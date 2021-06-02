@@ -50,7 +50,8 @@ with DAG(dag_id="ddt-ingestion", schedule_interval="@hourly", default_args=defau
          "spark.hadoop.fs.s3a.endpoint": "http://minio.ddt-persistence.svc.cluster.local",
          "spark.hadoop.fs.s3a.path.style.access": "true",
          "spark.hadoop.fs.s3a.connection.ssl.enabled": "false",
-         "spark.kubernetes.container.image.pullPolicy": "Always"
+         "spark.kubernetes.container.image.pullPolicy": "Always",
+         "spark.kubernetes.submission.waitAppCompletion": "false"
           }, 
         verbose=False
     )
