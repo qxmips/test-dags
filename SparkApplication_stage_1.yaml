@@ -1,7 +1,7 @@
 apiVersion: "sparkoperator.k8s.io/v1beta2"
 kind: SparkApplication
 metadata:
-  name: "stage1-{{ ds }}-{{ task_instance.try_number }}-{{ run_id }}"
+  name: "stage1-{{ task_instance.task_id }}-{{ task_instance.try_number }}-{{ ts_nodash }}"
   namespace: ddt-compute
 spec:
   type: Python

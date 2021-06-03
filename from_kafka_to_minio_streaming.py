@@ -6,7 +6,7 @@ from pyspark.sql.functions import from_json, to_timestamp, col, expr
 from pyspark.sql.types import StructType, StructField, StringType
 import time
 
-spark = SparkSession.builder.config("spark.jars.ivy", "/opt/bitnami/spark/jars").appName("stage_1").getOrCreate()
+spark = SparkSession.builder.config("spark.jars.ivy", "/tmp").appName("stage_1").getOrCreate()
 hadoop_conf = spark.sparkContext._jsc.hadoopConfiguration()
 hadoop_conf.set("fs.s3a.access.key", "minio")
 hadoop_conf.set("fs.s3a.secret.key", "minio123")
