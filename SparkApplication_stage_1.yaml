@@ -1,7 +1,7 @@
 apiVersion: "sparkoperator.k8s.io/v1beta2"
 kind: SparkApplication
 metadata:
-  name: "stage1-{{ task_instance.try_number }}-{{ ts_nodash }}"
+  name: "stage1-{{ task_instance.try_number }}-{{ macros.datetime.now().strftime('%Y-%m-%d-%H-%M') }}"
   namespace: ddt-compute
 spec:
   type: Python
