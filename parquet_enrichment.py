@@ -20,5 +20,5 @@ checkpoint_path="s3a://spark/checkpoint"
 df = spark.read.load("s3a://spark/output.parquet")
 df_enriched = df.withColumn("partition_id", spark_partition_id()).withColumn("timestamp",current_timestamp()) 
 df_enriched.show(10,False)
-df_enriched.write.mode("append").partitionBy("well_id").format("parquet").save("s3a://spark/curated/output.parquet")
+df_enriched.write.mode("append").format("parquet").save("s3a://spark/curated/output.parquet")
 spark.stop()
