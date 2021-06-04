@@ -16,6 +16,6 @@ checkpoint_path="s3a://spark/checkpoint"
 
 #   should we use streaming or raw
 df = spark.read.load("s3a://spark/output.parquet")
-df.select(col("value").cast("string").show(100,False)).show(100,False)
+df.select(col("value").cast("string")).select(col("value.*")).show(100,False)
 #df.write.partitionBy("favorite_color").format("parquet").save("namesPartByColor.parquet")
 spark.stop()

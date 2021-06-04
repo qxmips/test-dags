@@ -32,6 +32,7 @@ spark.readStream.format("kafka")\
     .load()\
     .selectExpr("CAST(key AS STRING) as key", "CAST(value AS STRING) as value")\
     .select(from_json(col("value").cast("string"), schema).alias("value"))\
+    .select(col("value.*"))\
     .writeStream.format("parquet")\
     .outputMode("append")\
     .option("path", output_path)\
