@@ -80,3 +80,4 @@ with DAG(dag_id="ddt-ingestion", schedule_interval="@hourly", default_args=defau
         )
     stage_1 >> stage_2
 
+#/opt/spark/bin/spark-submit --master k8s://https://8EFA8AC26455C8F75FAC76753DC7BE36.sk1.us-west-1.eks.amazonaws.com --conf spark.jars.ivy=/tmp --conf spark.executor.instances=3 --conf spark.kubernetes.authenticate.driver.serviceAccountName=spark --conf spark.kubernetes.container.image=qxmips/spark-py:3.1.1 --conf spark.kubernetes.namespace=ddt-compute --conf spark.kubernetes.container.image.pullPolicy=Always  --conf spark.kubernetes.namespace=ddt-compute --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.1.1,org.apache.kafka:kafka-clients:2.7.0,org.apache.hadoop:hadoop-aws:3.1.1 --name stage_1 --queue root.default --deploy-mode cluster --conf spark.kubernetes.authenticate.driver.serviceAccountName=spark local:///opt/spark/examples/src/main/python/pi.py
