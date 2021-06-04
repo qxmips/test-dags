@@ -13,3 +13,8 @@ hadoop_conf.set("fs.s3a.connection.ssl.enabled", "false")
 hadoop_conf.set("fs.s3a.path.style.access", "true")
 output_path = "s3a://spark/output.parquet"
 checkpoint_path="s3a://spark/checkpoint"
+
+#   should we use streaming or raw
+df = spark.read.load("s3a://spark/output.parquet")
+df.show(100,False)
+spark.stop()
