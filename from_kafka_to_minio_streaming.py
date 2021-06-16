@@ -1,4 +1,4 @@
-#spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.1.1,org.apache.kafka:kafka-clients:2.7.0,org.apache.hadoop:hadoop-aws:3.2.0 --master spark://spark-master-svc:7077 --conf spark.jars.ivy=/opt/bitnami/spark/jars /tmp/test.py
+#spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.1.1,org.apache.kafka:kafka-clients:2.7.0,org.apache.hadoop:hadoop-aws:3.2.0,org.elasticsearch:elasticsearch-spark-30_2.12:7.13.1 --master spark://spark-master-svc:7077 --conf spark.jars.ivy=/opt/bitnami/spark/jars /tmp/test.py
 # https://keestalkstech.com/2019/11/streaming-a-kafka-topic-to-a-delta-table-on-s3-with-spark-structured-streaming/
 from os.path import expanduser, join, abspath
 from pyspark.sql import SparkSession
@@ -17,7 +17,7 @@ hadoop_conf.set("fs.s3a.path.style.access", "true")
 output_path = "s3a://spark/output.parquet"
 checkpoint_path="s3a://spark/checkpoint"
 
-
+ls 
 schema = StructType([
         StructField("@metadata", StringType()),
         StructField("@timestamp", StringType()),

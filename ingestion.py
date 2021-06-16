@@ -30,16 +30,8 @@ default_args = {
             "retries": 1,
             "retry_delay": timedelta(minutes=1)
         }
-             
-with DAG(dag_id="ddt-ingestion", schedule_interval="@hourly", default_args=default_args, catchup=False) as dag:
-     
-    stage_1 = SparkSubmitOperator(
-        task_id="stage1",
-        application="/opt/airflow/dags/repo/from_kafka_to_minio_streaming.py",
-        conn_id="k8s_cluster",
-        name = "stage1",
-        packages = "org.apache.spark:spark-sql-kafka-0-10_2.12:3.1.1,org.apache.kafka:kafka-clients:2.7.0,org.apache.hadoop:hadoop-aws:3.2.0",
-        conf = { "spark.jars.ivy": "/tmp",
+
+spark_conf = { "spark.jars.ivy": "/tmp",
          "spark.executor.instances":"3",
          "spark.kubernetes.authenticate.driver.serviceAccountName": "spark",
          "spark.kubernetes.container.image": "qxmips/spark-py:3.1.1",
@@ -50,9 +42,21 @@ with DAG(dag_id="ddt-ingestion", schedule_interval="@hourly", default_args=defau
          "spark.hadoop.fs.s3a.endpoint": "http://minio.ddt-persistence.svc.cluster.local",
          "spark.hadoop.fs.s3a.path.style.access": "true",
          "spark.hadoop.fs.s3a.connection.ssl.enabled": "false",
-         "spark.kubernetes.container.image.pullPolicy": "Always"#,
-         #"spark.kubernetes.submission.waitAppCompletion": "false"
-          }, 
+         "spark.kubernetes.container.image.pullPolicy": "Always",
+         "spark.kubernetes.driver.annotation.prometheus.io/scrape": "true",
+         "spark.kubernetes.driver.annotation.prometheus.io/path": "/metrics/executors/prometheus/",
+         "spark.kubernetes.driver.annotation.prometheus.io/port": "4040"
+          }
+             
+with DAG(dag_id="ddt-ingestion", schedule_interval="@hourly", default_args=default_args, catchup=False) as dag:
+     
+    stage_1 = SparkSubmitOperator(
+        task_id="stage1",
+        application="/opt/airflow/dags/repo/from_kafka_to_minio_streaming.py",
+        conn_id="k8s_cluster",
+        name = "stage1",
+        packages = "org.apache.spark:spark-sql-kafka-0-10_2.12:3.1.1,org.apache.kafka:kafka-clients:2.7.0,org.apache.hadoop:hadoop-aws:3.2.0",
+        conf = spark_conf,
         verbose=False
     )
 
@@ -62,20 +66,7 @@ with DAG(dag_id="ddt-ingestion", schedule_interval="@hourly", default_args=defau
             conn_id="k8s_cluster",
             name = "stage2",
             packages = "org.apache.spark:spark-sql-kafka-0-10_2.12:3.1.1,org.apache.kafka:kafka-clients:2.7.0,org.apache.hadoop:hadoop-aws:3.2.0",
-            conf = { "spark.jars.ivy": "/tmp",
-            "spark.executor.instances":"3",
-            "spark.kubernetes.authenticate.driver.serviceAccountName": "spark",
-            "spark.kubernetes.container.image": "qxmips/spark-py:3.1.1",
-            "spark.kubernetes.namespace": "ddt-compute",
-            "spark.kubernetes.file.upload.path": "s3a://spark/shared",
-            "spark.hadoop.fs.s3a.access.key": "minio",
-            "spark.hadoop.fs.s3a.secret.key": "minio123",
-            "spark.hadoop.fs.s3a.endpoint": "http://minio.ddt-persistence.svc.cluster.local",
-            "spark.hadoop.fs.s3a.path.style.access": "true",
-            "spark.hadoop.fs.s3a.connection.ssl.enabled": "false",
-            "spark.kubernetes.container.image.pullPolicy": "Always"#,
-            #"spark.kubernetes.submission.waitAppCompletion": "false"
-            }, 
+            conf = spark_conf, 
             verbose=False
         )
     stage_1 >> stage_2
