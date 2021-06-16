@@ -17,7 +17,6 @@ hadoop_conf.set("fs.s3a.path.style.access", "true")
 output_path = "s3a://spark/output.parquet"
 checkpoint_path="s3a://spark/checkpoint"
 
-ls 
 schema = StructType([
         StructField("@metadata", StringType()),
         StructField("@timestamp", StringType()),
