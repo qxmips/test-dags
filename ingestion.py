@@ -65,7 +65,7 @@ with DAG(dag_id="ddt-ingestion", schedule_interval="@hourly", default_args=defau
             application="/opt/airflow/dags/repo/parquet_enrichment.py",
             conn_id="k8s_cluster",
             name = "stage2",
-            packages = "org.apache.spark:spark-sql-kafka-0-10_2.12:3.1.1,org.apache.kafka:kafka-clients:2.7.0,org.apache.hadoop:hadoop-aws:3.2.0,org.elasticsearch:elasticsearch-spark-30_2.12:7.13.1,org.elasticsearch:elasticsearch-hadoop:7.13.1",
+            packages = "org.apache.spark:spark-sql-kafka-0-10_2.12:3.1.1,org.apache.kafka:kafka-clients:2.7.0,org.apache.hadoop:hadoop-aws:3.2.0,org.elasticsearch,org.elasticsearch:elasticsearch-hadoop:7.13.1",
             conf = spark_conf, 
             verbose=False
         )
