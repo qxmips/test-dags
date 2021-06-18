@@ -48,8 +48,10 @@ spark_conf = { "spark.jars.ivy": "/tmp",
          "spark.metrics.conf.*.sink.prometheusServlet.class": "org.apache.spark.metrics.sink.PrometheusServlet",
          "spark.metrics.conf.*.sink.prometheusServlet.path": "/metrics/prometheus",
          "spark.kubernetes.driver.annotation.prometheus.io/scrape": "true",
-         "spark.kubernetes.driver.annotation.prometheus.io/path": "/metrics/executors/prometheus/",
-         "spark.kubernetes.driver.annotation.prometheus.io/port": "4040"
+         "spark.kubernetes.driver.annotation.prometheus.io/path": "/metrics/executors/prometheus",
+         "spark.kubernetes.driver.annotation.prometheus.io/port": "4040",
+         "spark.kubernetes.executor.label.metrics-exposed":"true",
+         "spark.kubernetes.driver.label.metrics-exposed":"true"
           }
              
 with DAG(dag_id="ddt-ingestion", schedule_interval="@hourly", default_args=default_args, catchup=False) as dag:
