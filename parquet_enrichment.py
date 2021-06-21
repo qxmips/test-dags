@@ -1,6 +1,6 @@
 from os.path import expanduser, join, abspath
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import from_json, to_timestamp, col, expr
+from pyspark.sql.functions import from_json, to_timestamp, col, expr, lit
 from pyspark.sql.types import StructType, StructField, StringType
 from pyspark.sql.functions import spark_partition_id, asc, desc, current_timestamp
 import time
@@ -24,10 +24,10 @@ df_enriched.write.mode("overwrite").format("parquet").save("s3a://spark/curated/
 spark.stop()
 
 #m7  Spark should report partition row count on each landing to raw transformation, both read and written
-# countByPartitionRead = df.groupBy(spark_partition_id()).count().withColumn("@timestamp", current_timestamp().cast("String")).withColumn("stage",  lit("read"))
-# countByPartitionWritten = df_enriched.groupBy(spark_partition_id()).count().withColumn("@timestamp", current_timestamp().cast("String")).withColumn("stage",  lit("write"))
-# countByPartitionRead.write.format("org.elasticsearch.spark.sql").option("es.nodes", "elasticsearch-master.ddt-observability.svc.cluster.local:9200").option("es.index.auto.create", "true").mode("overwrite").save("spark-read/_doc")
-# countByPartitionWritten.write.format("org.elasticsearch.spark.sql").option("es.nodes", "elasticsearch-master.ddt-observability.svc.cluster.local:9200").option("es.index.auto.create", "true").mode("overwrite").save("spark-write/_doc")
+countByPartitionRead = df.groupBy(spark_partition_id()).count().withColumn("@timestamp", current_timestamp().cast("String")).withColumn("stage",  lit("read"))
+countByPartitionWritten = df_enriched.groupBy(spark_partition_id()).count().withColumn("@timestamp", current_timestamp().cast("String")).withColumn("stage",  lit("write"))
+countByPartitionRead.write.format("org.elasticsearch.spark.sql").option("es.nodes", "elasticsearch-master.ddt-observability.svc.cluster.local:9200").option("es.index.auto.create", "true").mode("overwrite").save("spark-read/_doc")
+countByPartitionWritten.write.format("org.elasticsearch.spark.sql").option("es.nodes", "elasticsearch-master.ddt-observability.svc.cluster.local:9200").option("es.index.auto.create", "true").mode("overwrite").save("spark-write/_doc")
 
 # print('*' * 50)
 # for i in sorted(countByPartitionRead, key=lambda x: x[1]):
