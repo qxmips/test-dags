@@ -47,9 +47,8 @@ spark_conf = { "spark.jars.ivy": "/tmp",
          "spark.executor.processTreeMetrics.enabled":"true",
          "spark.metrics.conf.*.sink.prometheusServlet.class": "org.apache.spark.metrics.sink.PrometheusServlet",
          "spark.metrics.conf.*.sink.prometheusServlet.path": "/metrics/prometheus",
-         "spark.kubernetes.driver.annotation.prometheus.io/scrape": "true",
-         "spark.kubernetes.driver.annotation.prometheus.io/path": "/metrics/executors/prometheus",
-         "spark.kubernetes.driver.annotation.prometheus.io/port": "4040",
+         "master.sink.prometheusServlet.path":"/metrics/master/prometheus",
+         "applications.sink.prometheusServlet.path":"/metrics/applications/prometheus",
          "spark.kubernetes.executor.label.metrics-exposed":"true",
          "spark.kubernetes.driver.label.metrics-exposed":"true"
           }
