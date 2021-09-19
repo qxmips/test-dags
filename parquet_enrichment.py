@@ -1,9 +1,9 @@
 from os.path import expanduser, join, abspath
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import from_json, to_timestamp, col, expr, lit
+from pyspark.sql.functions import from_json, to_timestamp, col, expr, lit, year, month, dayofmonth, hour
 from pyspark.sql.types import StructType, StructField, StringType
 from pyspark.sql.functions import spark_partition_id, asc, desc, current_timestamp
-import time
+
 import time
 import datetime
 spark = SparkSession.builder.config("spark.jars.ivy", "/tmp").appName("stage_1").getOrCreate()
@@ -34,3 +34,17 @@ spark.stop()
 # for i in sorted(countByPartitionRead, key=lambda x: x[1]):
 #         print(i)
 # print('*' * 50)
+
+#m10
+json_schema = spark.read.json(df.rdd.map(lambda row: row.payload)).schema
+df2 = df.withColumn('value', from_json(col('payload'), json_schema)['value']).drop('payload')
+
+df3 = (df2.withColumn("year", year(col("@timestamp")))
+          .withColumn("month", month(col("@timestamp")))
+          .withColumn("day", dayofmonth(col("@timestamp")))
+          .withColumn("hour", hour(col("@timestamp")))
+          .groupBy("well_id","year","month","day","hour")
+          .sum("value")
+          .withColumnRenamed("sum(value)", 'hourly_value'))
+
+df3.write.partitionBy("year","month","day","hour").mode("overwrite").format("parquet").save("s3a://spark/hourly/output.parquet")
