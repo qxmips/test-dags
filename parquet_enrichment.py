@@ -21,7 +21,7 @@ df = spark.read.load("s3a://spark/output.parquet")
 df_enriched = df.withColumn("partition_id", spark_partition_id()).withColumn("timestamp",current_timestamp()) 
 df_enriched.show(10,False)
 df_enriched.write.mode("overwrite").format("parquet").save("s3a://spark/curated/output.parquet")
-spark.stop()
+
 
 #m7 partially skipped
 #m7  Spark should report partition row count on each landing to raw transformation, both read and written
@@ -37,7 +37,7 @@ spark.stop()
 
 #m10
 json_schema = spark.read.json(df.rdd.map(lambda row: row.payload)).schema
-df2 = df.withColumn('value', from_json(col('payload'), json_schema)['value']).drop('payload')
+df2 = df_enriched.withColumn('value', from_json(col('payload'), json_schema)['value']).drop('payload')
 
 df3 = (df2.withColumn("year", year(col("@timestamp")))
           .withColumn("month", month(col("@timestamp")))
@@ -48,3 +48,6 @@ df3 = (df2.withColumn("year", year(col("@timestamp")))
           .withColumnRenamed("sum(value)", 'hourly_value'))
 
 df3.write.partitionBy("year","month","day","hour").mode("overwrite").format("parquet").save("s3a://spark/hourly/output.parquet")
+
+
+spark.stop()
