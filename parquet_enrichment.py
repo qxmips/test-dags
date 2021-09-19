@@ -39,15 +39,33 @@ df_enriched.write.mode("overwrite").format("parquet").save("s3a://spark/curated/
 json_schema = spark.read.json(df.rdd.map(lambda row: row.payload)).schema
 df2 = df_enriched.withColumn('value', from_json(col('payload'), json_schema)['value']).drop('payload')
 
-df3 = (df2.withColumn("year", year(col("@timestamp")))
-          .withColumn("month", month(col("@timestamp")))
-          .withColumn("day", dayofmonth(col("@timestamp")))
-          .withColumn("hour", hour(col("@timestamp")))
-          .groupBy("well_id","name","year","month","day","hour")
-          .sum("value")
-          .withColumnRenamed("sum(value)", 'hourly_value'))
+json_schema = spark.read.json(df.rdd.map(lambda row: row.payload)).schema
+df2 = df.withColumn('value', from_json(col('payload'), json_schema)['value']).drop('payload')
 
-df3.write.partitionBy("year","month","day","hour").mode("overwrite").format("parquet").save("s3a://spark/hourly/output.parquet")
+def parq_hourly_avg(df,name):
+    """Returns the dataframe with hourly aggregated metrics 
+    and writes data to a parquet file partitioned by date
+    """
+    df_avg =  (df2.filter(df.name == name)
+              .withColumn("year", year(col("@timestamp")))
+              .withColumn("month", month(col("@timestamp")))
+              .withColumn("day", dayofmonth(col("@timestamp")))
+              .withColumn("hour", hour(col("@timestamp")))
+              .groupBy("well_id","name","year","month","day","hour")
+              .avg("value")
+              .withColumnRenamed("avg(value)", 'hourly_avg_value'))
+    df_avg.show()
+    df_avg.write.partitionBy("year","month","day","hour").mode("overwrite").format("parquet").save("s3a://spark/hourly/" + name + "/output.parquet")
+    return df_avg
 
+df_well_pipe_pressure = parq_hourly_avg(df2,"well_pipe_pressure")
+df_well_generator_temperature = parq_hourly_avg(df2,"well_generator_temperature")
+df_well_natural_gas = parq_hourly_avg(df2,"well_natural_gas")
+df_well_generator_power =  parq_hourly_avg(df2,"well_generator_power")
+df_well_crude_oil = parq_hourly_avg(df2,"well_crude_oil")
+df_well_pump_temperature = parq_hourly_avg(df2,"well_pump_temperature")
+df_well_pipe_temperature = parq_hourly_avg(df2,"well_pipe_temperature")
+df_well_pump_horse_power =parq_hourly_avg(df2,"well_pump_horse_power")
+df_well_pump_rpm  = parq_hourly_avg(df2,"well_pump_rpm")
 
 spark.stop()
