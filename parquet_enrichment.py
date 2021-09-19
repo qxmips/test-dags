@@ -43,7 +43,7 @@ df3 = (df2.withColumn("year", year(col("@timestamp")))
           .withColumn("month", month(col("@timestamp")))
           .withColumn("day", dayofmonth(col("@timestamp")))
           .withColumn("hour", hour(col("@timestamp")))
-          .groupBy("well_id","year","month","day","hour")
+          .groupBy("well_id","name","year","month","day","hour")
           .sum("value")
           .withColumnRenamed("sum(value)", 'hourly_value'))
 
