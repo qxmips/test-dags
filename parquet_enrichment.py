@@ -54,7 +54,7 @@ def parq_hourly_avg(df,name):
               .groupBy("well_id","name","year","month","day","hour")
               .avg("value")
               .withColumnRenamed("avg(value)", 'hourly_avg_value'))
-    df_avg.show()
+    #df_avg.show()
     df_avg.write.partitionBy("year","month","day","hour").mode("overwrite").format("parquet").save("s3a://spark/hourly/" + name + "/output.parquet")
     return df_avg
 
@@ -68,4 +68,10 @@ df_well_pipe_temperature = parq_hourly_avg(df2,"well_pipe_temperature")
 df_well_pump_horse_power =parq_hourly_avg(df2,"well_pump_horse_power")
 df_well_pump_rpm  = parq_hourly_avg(df2,"well_pump_rpm")
 
+mode = "append"
+jdbc_url="jdbc:postgresql://rdb-postgresql-ha-pgpool.ddt-persistence.svc.cluster.local:5432/pipe_pressure"
+config = {"user":"airflow", 
+          "password": "zNrnHq%v"}
+ 
+df_well_pipe_pressure.write.jdbc(url=jdbc_url, table='well_pipe_pressure', mode=mode, properties=config)
 spark.stop()
