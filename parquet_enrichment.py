@@ -71,7 +71,8 @@ df_well_pump_rpm  = parq_hourly_avg(df2,"well_pump_rpm")
 mode = "append"
 jdbc_url="jdbc:postgresql://rdb-postgresql-ha-pgpool.ddt-persistence.svc.cluster.local:5432/pipe_pressure"
 config = {"user":"airflow", 
-          "password": "zNrnHq%v"}
+          "password": "zNrnHq%v",
+          "driver":"org.postgresql.Driver"}
  
 df_well_pipe_pressure.write.jdbc(url=jdbc_url, table='well_pipe_pressure', mode=mode, properties=config)
 spark.stop()
