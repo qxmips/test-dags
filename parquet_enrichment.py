@@ -63,6 +63,7 @@ def write_hourly_avg(df,name):
           "password": "zNrnHq%v",
           "driver":"org.postgresql.Driver"}
     df_avg.write.partitionBy("year","month","day","hour").mode("overwrite").format("parquet").save("s3a://spark/hourly/" + name + "/output.parquet")
+    print(f'writing to  {jdbc_url} table {name}')
     df_avg.write.jdbc(url=jdbc_url, table=name, mode=mode, properties=config)
 
     return df_avg
@@ -77,12 +78,12 @@ df_well_pipe_temperature = write_hourly_avg(df2,"well_pipe_temperature")
 df_well_pump_horse_power =write_hourly_avg(df2,"well_pump_horse_power")
 df_well_pump_rpm  = write_hourly_avg(df2,"well_pump_rpm")
 
-mode = "append"
-jdbc_url="jdbc:postgresql://rdb-postgresql-ha-pgpool.ddt-persistence.svc.cluster.local:5432/pipe_pressure"
-config = {"user":"airflow", 
-          "password": "zNrnHq%v",
-          "driver":"org.postgresql.Driver"}
+# mode = "append"
+# jdbc_url="jdbc:postgresql://rdb-postgresql-ha-pgpool.ddt-persistence.svc.cluster.local:5432/pipe_pressure"
+# config = {"user":"airflow", 
+#           "password": "zNrnHq%v",
+#           "driver":"org.postgresql.Driver"}
  
-df_well_pipe_pressure.write.jdbc(url=jdbc_url, table='well_pipe_pressure', mode=mode, properties=config)
+# df_well_pipe_pressure.write.jdbc(url=jdbc_url, table='well_pipe_pressure', mode=mode, properties=config)
 
 spark.stop()
