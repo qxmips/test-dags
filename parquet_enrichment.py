@@ -1,5 +1,6 @@
 #TODO: refactor using oop classes https://docs.databricks.com/spark/latest/structured-streaming/foreach.html
 # https://github.com/chivo369/pyspark-stream-app/blob/fbd309658b61a21a9d9493ed5176e14d7ec907e3/streaming_app/stream_app.py
+#TODO : rewrite enrishment using spark streaming https://stackoverflow.com/questions/54785519/using-airflow-to-run-spark-streaming-jobs
 from os.path import expanduser, join, abspath
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import from_json, to_timestamp, col, expr, lit, year, month, dayofmonth, hour
