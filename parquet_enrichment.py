@@ -1,3 +1,5 @@
+#TODO: refactor using oop classes https://docs.databricks.com/spark/latest/structured-streaming/foreach.html
+# https://github.com/chivo369/pyspark-stream-app/blob/fbd309658b61a21a9d9493ed5176e14d7ec907e3/streaming_app/stream_app.py
 from os.path import expanduser, join, abspath
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import from_json, to_timestamp, col, expr, lit, year, month, dayofmonth, hour
@@ -58,7 +60,7 @@ def write_hourly_avg(df,name):
 
     # write to db
     # https://newbedev.com/how-to-speed-up-spark-df-write-jdbc-to-postgres-database
-    mode = "append"
+    mode = "overwrite"
     jdbc_url="jdbc:postgresql://rdb-postgresql-ha-pgpool.ddt-persistence.svc.cluster.local:5432/" + name.replace("well_","")
     config = {"user":"airflow", 
           "password": "zNrnHq%v",
