@@ -42,9 +42,9 @@ df2 = df_enriched.withColumn('value', from_json(col('payload'), json_schema)['va
 json_schema = spark.read.json(df.rdd.map(lambda row: row.payload)).schema
 df2 = df.withColumn('value', from_json(col('payload'), json_schema)['value']).drop('payload')
 
-def parq_hourly_avg(df,name):
+def write_hourly_avg(df,name):
     """Returns the dataframe with hourly aggregated metrics 
-    and writes data to a parquet file partitioned by date
+    and writes data to a parquet file partitioned by date and to postgre
     """
     df_avg =  (df2.filter(df.name == name)
               .withColumn("year", year(col("@timestamp")))
@@ -55,18 +55,27 @@ def parq_hourly_avg(df,name):
               .avg("value")
               .withColumnRenamed("avg(value)", 'hourly_avg_value'))
     #df_avg.show()
+
+    # write to db
+    mode = "append"
+    jdbc_url="jdbc:postgresql://rdb-postgresql-ha-pgpool.ddt-persistence.svc.cluster.local:5432/" + name.replace("well_","")
+    config = {"user":"airflow", 
+          "password": "zNrnHq%v",
+          "driver":"org.postgresql.Driver"}
     df_avg.write.partitionBy("year","month","day","hour").mode("overwrite").format("parquet").save("s3a://spark/hourly/" + name + "/output.parquet")
+    df_avg.write.jdbc(url=jdbc_url, table=name, mode=mode, properties=config)
+
     return df_avg
 
-df_well_pipe_pressure = parq_hourly_avg(df2,"well_pipe_pressure")
-df_well_generator_temperature = parq_hourly_avg(df2,"well_generator_temperature")
-df_well_natural_gas = parq_hourly_avg(df2,"well_natural_gas")
-df_well_generator_power =  parq_hourly_avg(df2,"well_generator_power")
-df_well_crude_oil = parq_hourly_avg(df2,"well_crude_oil")
-df_well_pump_temperature = parq_hourly_avg(df2,"well_pump_temperature")
-df_well_pipe_temperature = parq_hourly_avg(df2,"well_pipe_temperature")
-df_well_pump_horse_power =parq_hourly_avg(df2,"well_pump_horse_power")
-df_well_pump_rpm  = parq_hourly_avg(df2,"well_pump_rpm")
+df_well_pipe_pressure = write_hourly_avg(df2,"well_pipe_pressure")
+df_well_generator_temperature = write_hourly_avg(df2,"well_generator_temperature")
+df_well_natural_gas = write_hourly_avg(df2,"well_natural_gas")
+df_well_generator_power =  write_hourly_avg(df2,"well_generator_power")
+df_well_crude_oil = write_hourly_avg(df2,"well_crude_oil")
+df_well_pump_temperature = write_hourly_avg(df2,"well_pump_temperature")
+df_well_pipe_temperature = write_hourly_avg(df2,"well_pipe_temperature")
+df_well_pump_horse_power =write_hourly_avg(df2,"well_pump_horse_power")
+df_well_pump_rpm  = write_hourly_avg(df2,"well_pump_rpm")
 
 mode = "append"
 jdbc_url="jdbc:postgresql://rdb-postgresql-ha-pgpool.ddt-persistence.svc.cluster.local:5432/pipe_pressure"
@@ -75,4 +84,5 @@ config = {"user":"airflow",
           "driver":"org.postgresql.Driver"}
  
 df_well_pipe_pressure.write.jdbc(url=jdbc_url, table='well_pipe_pressure', mode=mode, properties=config)
+
 spark.stop()
