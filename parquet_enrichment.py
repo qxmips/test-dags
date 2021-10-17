@@ -62,7 +62,7 @@ def write_hourly_avg(df,name):
     # write to db
     # https://newbedev.com/how-to-speed-up-spark-df-write-jdbc-to-postgres-database
     mode = "overwrite"
-    jdbc_url="jdbc:postgresql://rdb-postgresql-ha-pgpool.ddt-persistence.svc.cluster.local:5432/" + name.replace("well_","")
+    jdbc_url="jdbc:postgresql://rdb-postgresql-ha-pgpool.ddt-persistence.svc.cluster.local:5432/ddt"
     config = {"user":"airflow", 
           "password": "zNrnHq%v",
           "driver":"org.postgresql.Driver"}
